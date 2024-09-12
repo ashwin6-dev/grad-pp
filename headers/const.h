@@ -2,8 +2,13 @@
 
 #include "node.h"
 
-class Variable : public Node {
+class Const : public Node {
 public:
-    Variable(double value) : value(value) {};
-    void accept(Visitor& visit) override;
+    Const(double value) : value(value) {};
+    void accept(Visitor* visit) override;
+    double get_value();
+private:
+    double value;
 };
+
+std::shared_ptr<Const> make_const(double value);

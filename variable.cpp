@@ -1,8 +1,14 @@
 #include "headers/variable.h"
+#include "headers/visitor.h"
 
-void Variable::accept(Visitor& visitor)
+void Variable::accept(Visitor* visitor)
 {
-    visitor->accept(this);
+    visitor->visit(this);
+}
+
+double Variable::get_value()
+{
+    return value;
 }
 
 std::shared_ptr<Variable> make_variable(double value)

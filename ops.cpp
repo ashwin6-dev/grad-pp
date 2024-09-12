@@ -1,21 +1,32 @@
 #include "headers/ops.h"
+#include "headers/visitor.h"
 
-void Add::accept(Visitor& visitor)
+std::shared_ptr<Node> OperationNode::get_left()
+{
+    return left;
+}
+
+std::shared_ptr<Node> OperationNode::get_right()
+{
+    return right;
+}
+
+void Add::accept(Visitor* visitor)
 {
     visitor->visit(this);
 }
 
-void Subtract::accept(Visitor& visitor)
+void Subtract::accept(Visitor* visitor)
 {
     visitor->visit(this);
 }
 
-void Multiply::accept(Visitor& visitor)
+void Multiply::accept(Visitor* visitor)
 {
     visitor->visit(this);
 }
 
-void Divide::accept(Visitor& visitor)
+void Divide::accept(Visitor* visitor)
 {
     visitor->visit(this);
 }
