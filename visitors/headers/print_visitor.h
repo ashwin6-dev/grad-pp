@@ -1,9 +1,6 @@
 #pragma once
 
 #include "visitor.h"
-#include "variable.h"
-#include "const.h"
-#include "ops.h"
 #include <iostream>
 
 // Forward declarations of node types

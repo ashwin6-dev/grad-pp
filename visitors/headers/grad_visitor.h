@@ -1,7 +1,4 @@
 #include "visitor.h"
-#include "variable.h"
-#include "const.h"
-#include "ops.h"
 
 #include <unordered_map>
 

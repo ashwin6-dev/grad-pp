@@ -1,35 +1,32 @@
+# Makefile
+
 # Compiler
 CXX = g++
 
-# Compiler flags
-CXXFLAGS = -std=c++11 -Wall -Wextra -O2
 
-# Target executable
-TARGET = autodiff
+# Executable name
+EXEC = grad++
 
-# Source files: Automatically detect all .cpp files in the current directory
-SRCS = $(wildcard *.cpp)
+# Source files
+SRCS = $(wildcard */*.cpp) main.cpp
 
-# Object files (compiled .o files)
+# Object files
 OBJS = $(SRCS:.cpp=.o)
 
-# Header files: Automatically detect all .h files in the current directory
-HEADERS = $(wildcard *.h)
+# Default target
+all: $(EXEC)
 
-# Default rule to compile the program
-all: $(TARGET)
+# Link object files to create executable
+$(EXEC): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Rule to link object files and create the executable
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
-
-# Rule to compile .cpp files into .o object files
-%.o: %.cpp $(HEADERS)
+# Compile source files to object files
+%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean up object files and the executable
+# Clean up build files
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(EXEC)
 
 # Phony targets
 .PHONY: all clean

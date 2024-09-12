@@ -1,8 +1,8 @@
 #pragma once
 
-#include "variable.h"
-#include "const.h"
-#include "ops.h"
+#include "../../graph/headers/variable.h"
+#include "../../graph/headers/const.h"
+#include "../../graph/headers/ops.h"
 
 class Visitor {
 public:

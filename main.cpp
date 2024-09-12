@@ -1,5 +1,5 @@
-#include "headers/print_visitor.h"
-#include "headers/grad_visitor.h"
+#include "./visitors/headers/print_visitor.h"
+#include "./visitors/headers/grad_visitor.h"
 
 int main()
 {
