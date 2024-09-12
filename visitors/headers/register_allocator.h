@@ -20,5 +20,5 @@ public:
     void visit(Divide* node) override;
 
     RegisterMap allocate_registers(std::shared_ptr<Node> graph);
-    void allocate_node(Node* node, int reg);
+    void allocate_node(Node* node, int reg = -1);
 };

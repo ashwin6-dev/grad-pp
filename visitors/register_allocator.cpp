@@ -11,12 +11,12 @@ RegisterMap RegisterAllocator::allocate_registers(std::shared_ptr<Node> graph)
         available_registers.push_back(reg);
     }
 
-    allocate_node(graph.get(), -1);
+    allocate_node(graph.get());
 
     return register_map;
 }
 
-void RegisterAllocator::allocate_node(Node* node, int reg = -1)
+void RegisterAllocator::allocate_node(Node* node, int reg)
 {
     if (register_map.count(node) || available_registers.empty()) return;
 
