@@ -7,6 +7,7 @@ void JITVisitor::jit(std::shared_ptr<Node> graph)
 
 void JITVisitor::visit(Variable* node) {}
 void JITVisitor::visit(Const* node) {}
+void JITVisitor::visit(Input* node) {}
 
 void JITVisitor::visit(Add* node)
 {
@@ -20,7 +21,7 @@ void JITVisitor::visit(Add* node)
     emitter.addsd(register_allocation[right.get()], register_allocation[node]);
 }
 
-void JITVisitor::visit(Sub* node)
+void JITVisitor::visit(Subtract* node)
 {
     std::shared_ptr<Node> left = node->get_left();
     std::shared_ptr<Node> right = node->get_right();
@@ -32,7 +33,7 @@ void JITVisitor::visit(Sub* node)
     emitter.subsd(register_allocation[right.get()], register_allocation[node]);
 }
 
-void JITVisitor::visit(Mul* node)
+void JITVisitor::visit(Multiply* node)
 {
     std::shared_ptr<Node> left = node->get_left();
     std::shared_ptr<Node> right = node->get_right();
@@ -44,7 +45,7 @@ void JITVisitor::visit(Mul* node)
     emitter.mulsd(register_allocation[right.get()], register_allocation[node]);
 }
 
-void JITVisitor::visit(Div* node)
+void JITVisitor::visit(Divide* node)
 {
     std::shared_ptr<Node> left = node->get_left();
     std::shared_ptr<Node> right = node->get_right();

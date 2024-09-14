@@ -10,6 +10,10 @@ void PrintVisitor::visit(Const* constant) {
     std::cout << "Const[" << constant->get_value() << "]";
 }
 
+void PrintVisitor::visit(Input* input) {
+    std::cout << "Input()";
+}
+
 // Visit for Add node
 void PrintVisitor::visit(Add* node) {
     std::cout << "(";

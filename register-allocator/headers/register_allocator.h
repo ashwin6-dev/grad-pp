@@ -14,6 +14,7 @@ private:
 public:
     void visit(Variable* node) override;
     void visit(Const* node) override;
+    void visit(Input* node) override;
     void visit(Add* node) override;
     void visit(Subtract* node) override;
     void visit(Multiply* node) override;

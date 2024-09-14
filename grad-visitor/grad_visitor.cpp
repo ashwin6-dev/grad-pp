@@ -20,6 +20,7 @@ void GradVisitor::apply_gradient(Node* node, std::shared_ptr<Node> gradient)
 
 void GradVisitor::visit(Variable* node) {}
 void GradVisitor::visit(Const* node) {}
+void GradVisitor::visit(Input* node) {}
 
 void GradVisitor::visit(Add* node)
 {

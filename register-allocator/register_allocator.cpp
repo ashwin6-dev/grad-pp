@@ -50,6 +50,11 @@ void RegisterAllocator::visit(Const* node)
     allocate_node(node);
 }
 
+void RegisterAllocator::visit(Input* node)
+{
+    allocate_node(node);
+}
+
 void RegisterAllocator::visit(Add* node)
 {
     allocate_node(node);
