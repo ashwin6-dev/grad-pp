@@ -1,6 +1,6 @@
-#include "./visitors/headers/print_visitor.h"
-#include "./visitors/headers/register_allocator.h"
-#include "./visitors/headers/grad_visitor.h"
+#include "./print-visitor/headers/print_visitor.h"
+#include "./register-allocator/headers/register_allocator.h"
+#include "./grad-visitor/headers/grad_visitor.h"
 
 int main()
 {

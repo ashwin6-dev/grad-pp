@@ -1,5 +1,5 @@
 #include "headers/variable.h"
-#include "../visitors/headers/visitor.h"
+#include "../visitor/headers/visitor.h"
 
 void Variable::accept(Visitor* visitor)
 {

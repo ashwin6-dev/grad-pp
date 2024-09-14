@@ -1,5 +1,5 @@
 #include "headers/ops.h"
-#include "../visitors/headers/visitor.h"
+#include "../visitor/headers/visitor.h"
 
 std::shared_ptr<Node> OperationNode::get_left()
 {

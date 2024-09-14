@@ -1,5 +1,5 @@
 #include "headers/const.h"
-#include "../visitors/headers/visitor.h"
+#include "../visitor/headers/visitor.h"
 
 void Const::accept(Visitor* visitor)
 {
