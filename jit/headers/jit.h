@@ -8,6 +8,9 @@ class JITVisitor : public Visitor {
 private:
     RegisterAllocator register_allocator;
     RegisterMap register_allocation;
+
+    std::unordered_map<Node*, int> node_displacement;
+    int curr_displacement = 0;
     
     Emitter emitter;
 
@@ -22,5 +25,5 @@ public:
     void visit(Multiply* node) override;
     void visit(Divide* node) override;
 
-    void jit(std::shared_ptr<Node> graph);
+    compiled jit(std::shared_ptr<Node> graph);
 };

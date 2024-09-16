@@ -8,6 +8,7 @@ class Emitter {
     std::vector<char> instructions;
 
 public:
+    void movsd_imm_to_xmm(double value, char reg);
     void movesd_reg_memory(char reg, char displacement);
     void movesd_memory_reg(char reg, char displacement);
     void movesd_reg_reg(char src, char dest);

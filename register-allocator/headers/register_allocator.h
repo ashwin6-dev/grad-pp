@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../../visitor/headers/visitor.h"
 
 #include <unordered_map>

@@ -7,7 +7,7 @@ RegisterMap RegisterAllocator::allocate_registers(std::shared_ptr<Node> graph)
 
     int MAX_REGISTERS = 16;
 
-    for (int reg = 0; reg < MAX_REGISTERS; reg++) {
+    for (int reg = MAX_REGISTERS; reg >= 0; reg--) {
         available_registers.push_back(reg);
     }
 
@@ -21,15 +21,9 @@ void RegisterAllocator::allocate_node(Node* node, int reg)
     if (register_map.count(node) || available_registers.empty()) return;
 
     if (reg != -1) {
-        auto it = std::find(available_registers.begin(), available_registers.end(), reg);
-        if (it != available_registers.end()) {
-            available_registers.erase(it);
-            used_registers.push_back(reg);
-            register_map[node] = reg;
-            return;
-        } else {
-            reg = -1;
-        }
+        register_map[node] = reg;
+        node->accept(this);
+        return;
     }
 
     int next_reg = available_registers.back();

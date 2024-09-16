@@ -1,13 +1,30 @@
 #include "headers/jit.h"
 
-void JITVisitor::jit(std::shared_ptr<Node> graph)
+compiled JITVisitor::jit(std::shared_ptr<Node> graph)
 {
     register_allocation = register_allocator.allocate_registers(graph);
+    graph->accept(this);
+
+    return emitter.compile();
 }
 
 void JITVisitor::visit(Variable* node) {}
-void JITVisitor::visit(Const* node) {}
-void JITVisitor::visit(Input* node) {}
+
+void JITVisitor::visit(Const* node)
+{
+    emitter.movsd_imm_to_xmm(node->get_value(), register_allocation[node]);
+}
+
+void JITVisitor::visit(Input* node)
+{
+    if (node_displacement.count(node) == 0) {
+        node_displacement[node] = curr_displacement;
+        curr_displacement += 8;
+    }
+
+    int displacement = node_displacement[node];
+    emitter.movesd_memory_reg(register_allocation[node], displacement);
+}
 
 void JITVisitor::visit(Add* node)
 {
