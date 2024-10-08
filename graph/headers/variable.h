@@ -7,6 +7,8 @@ public:
     Variable(double value) : value(value) {};
     void accept(Visitor* visit) override;
     double get_value();
+    void set_value(double value);
+    
 private:
     double value;
 };

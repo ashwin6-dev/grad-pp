@@ -2,13 +2,17 @@
 
 compiled JITVisitor::jit(std::shared_ptr<Node> graph)
 {
+    curr_displacement = 0;
     register_allocation = register_allocator.allocate_registers(graph);
     graph->accept(this);
 
     return emitter.compile();
 }
 
-void JITVisitor::visit(Variable* node) {}
+void JITVisitor::visit(Variable* node) 
+{
+    emitter.movsd_imm_to_xmm(node->get_value(), register_allocation[node]);
+}
 
 void JITVisitor::visit(Const* node)
 {

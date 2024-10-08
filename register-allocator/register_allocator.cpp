@@ -1,17 +1,23 @@
 #include "headers/register_allocator.h"
 #include <algorithm>
+#include <iostream>
 
 RegisterMap RegisterAllocator::allocate_registers(std::shared_ptr<Node> graph)
 {
     available_registers = std::vector<int> {};
 
-    int MAX_REGISTERS = 16;
+    int MAX_REGISTERS = 7;
 
     for (int reg = MAX_REGISTERS; reg >= 0; reg--) {
         available_registers.push_back(reg);
     }
 
+    std::cout << "**" << std::endl;
     allocate_node(graph.get());
+    for (int r : used_registers) {
+        std::cout << r << std::endl;
+    }
+    std::cout << "**" << std::endl;
 
     return register_map;
 }
