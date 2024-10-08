@@ -8,15 +8,19 @@ GradientMap GradVisitor::backward(std::shared_ptr<Node> graph)
     return gradient_map;
 }
 
-void GradVisitor::apply_gradient(Node* node, std::shared_ptr<Node> gradient)
-{
-    if (!gradient_map.count(node)) {
-        gradient_map[node] = gradient;
+void GradVisitor::apply_gradient(Node* node, std::shared_ptr<Node> gradient) {
+    if (auto variable_node = dynamic_cast<Variable*>(node)) {
+        if (!gradient_map.count(variable_node)) {
+            gradient_map[variable_node] = gradient;
+        } else {
+            gradient_map[variable_node] = make_add(gradient_map[variable_node], gradient);
+        }
         return;
     }
 
-    gradient_map[node] = make_add(gradient_map[node], gradient);
+    gradient_map[node] = gradient;
 }
+
 
 void GradVisitor::visit(Variable* node) {}
 void GradVisitor::visit(Const* node) {}
