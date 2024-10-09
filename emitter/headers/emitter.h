@@ -5,16 +5,17 @@
 typedef double (*compiled)(double*);
 
 class Emitter {
-    std::vector<char> instructions;
+    std::vector<int> instructions; // Changed from char to int
 
 public:
-    void movsd_imm_to_xmm(double value, char reg);
-    void movesd_reg_memory(char reg, char displacement);
-    void movesd_memory_reg(char reg, char displacement);
-    void movesd_reg_reg(char src, char dest);
-    void mulsd(char src, char dest);
-    void addsd(char src, char dest);
-    void subsd(char src, char dest);
-    void divsd(char src, char dest);
+    void movsd_imm_to_xmm(double value, int reg);         // Changed char to int
+    void movesd_reg_memory(int reg, int displacement);     // Changed char to int
+    void movesd_memory_reg(int reg, int displacement);     // Changed char to int
+    void movesd_reg_reg(int src, int dest);                // Changed char to int
+    void mulsd(int src, int dest);                          // Changed char to int
+    void addsd(int src, int dest);                          // Changed char to int
+    void subsd(int src, int dest);                          // Changed char to int
+    void divsd(int src, int dest);                          // Changed char to int
+    void clear();
     compiled compile();
 };

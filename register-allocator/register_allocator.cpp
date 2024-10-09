@@ -5,96 +5,126 @@
 RegisterMap RegisterAllocator::allocate_registers(std::shared_ptr<Node> graph)
 {
     available_registers = std::vector<int> {};
+    live_intervals = std::unordered_map<Node*, LiveInterval> {};
+    register_map.clear();
+    time = 0;
+    graph->accept(this);
+
+    std::vector<LiveInterval> sorted_intervals;
+    for (const auto& entry : live_intervals) {
+        sorted_intervals.push_back(entry.second);
+    }
+
+    std::sort(sorted_intervals.begin(), sorted_intervals.end(), [](const LiveInterval& a, const LiveInterval& b) {
+        return a.start < b.start;
+    });
 
     int MAX_REGISTERS = 7;
 
-    for (int reg = MAX_REGISTERS; reg >= 0; reg--) {
+    for (int reg = 0; reg <= MAX_REGISTERS; reg++) {
         available_registers.push_back(reg);
     }
 
-    std::cout << "**" << std::endl;
-    allocate_node(graph.get());
-    for (int r : used_registers) {
-        std::cout << r << std::endl;
+    for (size_t i = 0; i < sorted_intervals.size();) {
+        Node* node = sorted_intervals[i].node;
+
+        int prev_size = sorted_intervals.size();
+        expire_old_intervals(sorted_intervals, sorted_intervals[i].start);
+        int new_size = sorted_intervals.size();
+
+        if (!available_registers.empty()) {
+            int reg = available_registers.back();
+            available_registers.pop_back();
+            register_map[node] = reg;
+        } else {
+            std::cout << "no registers available" << std::endl;
+        }
+
+        i = i - (prev_size - new_size) + 1;
     }
-    std::cout << "**" << std::endl;
 
     return register_map;
 }
 
+void RegisterAllocator::expire_old_intervals(std::vector<LiveInterval>& intervals, int start_time)
+{
+    for (auto it = intervals.begin(); it != intervals.end(); ) {
+        if (it->end < start_time) {
+            available_registers.push_back(register_map[it->node]);
+            it = intervals.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
 void RegisterAllocator::allocate_node(Node* node, int reg)
 {
-    if (register_map.count(node) || available_registers.empty()) return;
+}
 
-    if (reg != -1) {
-        register_map[node] = reg;
-        node->accept(this);
-        return;
+void RegisterAllocator::visit(Variable* node) {
+    update_live_interval(node);
+}
+
+void RegisterAllocator::visit(Const* node) {
+    update_live_interval(node);
+}
+
+void RegisterAllocator::visit(Input* node) {
+    update_live_interval(node);
+}
+
+void RegisterAllocator::visit(Add* node) {
+    update_live_interval(node);
+    time++;
+
+    int saved_time = time;
+    node->get_left()->accept(this);
+
+    time = saved_time;
+    node->get_right()->accept(this);
+}
+
+void RegisterAllocator::visit(Subtract* node) {
+    update_live_interval(node);
+    time++;
+
+    int saved_time = time;
+    node->get_left()->accept(this);
+
+    time = saved_time;
+    node->get_right()->accept(this);
+}
+
+void RegisterAllocator::visit(Multiply* node) {
+    update_live_interval(node);
+    time++;
+
+    int saved_time = time;
+    node->get_left()->accept(this);
+
+    time = saved_time;
+    node->get_right()->accept(this);
+}
+
+void RegisterAllocator::visit(Divide* node) {
+    update_live_interval(node);
+    time++;
+
+    int saved_time = time;
+    node->get_left()->accept(this);
+
+    time = saved_time;
+    node->get_right()->accept(this);
+}
+
+void RegisterAllocator::update_live_interval(Node* node) {
+    if (live_intervals.count(node)) {
+        LiveInterval& lv = live_intervals[node];
+        lv.start = std::min(lv.start, time);
+        lv.end = std::max(lv.end, time);
+    } else {
+        LiveInterval lv = { node, time, time };
+        live_intervals[node] = lv;
     }
-
-    int next_reg = available_registers.back();
-    available_registers.pop_back();
-    used_registers.push_back(next_reg);
-    register_map[node] = next_reg;
-
-    node->accept(this);
-}
-
-void RegisterAllocator::visit(Variable* node)
-{
-    allocate_node(node);
-}
-
-void RegisterAllocator::visit(Const* node)
-{
-    allocate_node(node);
-}
-
-void RegisterAllocator::visit(Input* node)
-{
-    allocate_node(node);
-}
-
-void RegisterAllocator::visit(Add* node)
-{
-    allocate_node(node);
-
-    std::shared_ptr<Node> left = node->get_left();
-    std::shared_ptr<Node> right = node->get_right();
-
-    allocate_node(left.get(), register_map[node]);
-    allocate_node(right.get());
-}
-
-void RegisterAllocator::visit(Subtract* node)
-{
-    allocate_node(node);
-
-    std::shared_ptr<Node> left = node->get_left();
-    std::shared_ptr<Node> right = node->get_right();
-
-    allocate_node(left.get(), register_map[node]);
-    allocate_node(right.get());
-}
-
-void RegisterAllocator::visit(Multiply* node)
-{
-    allocate_node(node);
-
-    std::shared_ptr<Node> left = node->get_left();
-    std::shared_ptr<Node> right = node->get_right();
-
-    allocate_node(left.get(), register_map[node]);
-    allocate_node(right.get());
-}
-
-void RegisterAllocator::visit(Divide* node)
-{
-    allocate_node(node);
-
-    std::shared_ptr<Node> left = node->get_left();
-    std::shared_ptr<Node> right = node->get_right();
-
-    allocate_node(left.get(), register_map[node]);
-    allocate_node(right.get());
 }

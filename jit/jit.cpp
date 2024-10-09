@@ -1,10 +1,15 @@
 #include "headers/jit.h"
+#include <iostream>
 
 compiled JITVisitor::jit(std::shared_ptr<Node> graph)
 {
     curr_displacement = 0;
+    node_displacement.clear();
+    emitter.clear();
     register_allocation = register_allocator.allocate_registers(graph);
     graph->accept(this);
+
+    emitter.movesd_reg_reg(register_allocation[graph.get()], 0);
 
     return emitter.compile();
 }
@@ -38,8 +43,17 @@ void JITVisitor::visit(Add* node)
     left->accept(this);
     right->accept(this);
 
-    emitter.movesd_reg_reg(register_allocation[left.get()], register_allocation[node]);
-    emitter.addsd(register_allocation[right.get()], register_allocation[node]);
+    int right_register = register_allocation[right.get()];
+    int left_register = register_allocation[left.get()];
+    int node_register = register_allocation[node];
+
+    if (left_register == node_register) {
+        emitter.movesd_reg_reg(left_register, node_register);
+        emitter.addsd(right_register, node_register);
+    }else {
+        emitter.movesd_reg_reg(right_register, node_register);
+        emitter.addsd(left_register, node_register);
+    }
 }
 
 void JITVisitor::visit(Subtract* node)
@@ -49,9 +63,18 @@ void JITVisitor::visit(Subtract* node)
 
     left->accept(this);
     right->accept(this);
-    
-    emitter.movesd_reg_reg(register_allocation[left.get()], register_allocation[node]);
-    emitter.subsd(register_allocation[right.get()], register_allocation[node]);
+
+    int right_register = register_allocation[right.get()];
+    int left_register = register_allocation[left.get()];
+    int node_register = register_allocation[node];
+
+    if (left_register == node_register) {
+        emitter.movesd_reg_reg(left_register, node_register);
+        emitter.subsd(right_register, node_register);
+    }else {
+        emitter.subsd(left_register, right_register);
+        emitter.movesd_reg_reg(right_register, node_register);
+    }
 }
 
 void JITVisitor::visit(Multiply* node)
@@ -62,8 +85,17 @@ void JITVisitor::visit(Multiply* node)
     left->accept(this);
     right->accept(this);
 
-    emitter.movesd_reg_reg(register_allocation[left.get()], register_allocation[node]);
-    emitter.mulsd(register_allocation[right.get()], register_allocation[node]);
+    int right_register = register_allocation[right.get()];
+    int left_register = register_allocation[left.get()];
+    int node_register = register_allocation[node];
+
+    if (left_register == node_register) {
+        emitter.movesd_reg_reg(left_register, node_register);
+        emitter.mulsd(right_register, node_register);
+    }else {
+        emitter.movesd_reg_reg(right_register, node_register);
+        emitter.mulsd(left_register, node_register);
+    }
 }
 
 void JITVisitor::visit(Divide* node)
@@ -74,6 +106,14 @@ void JITVisitor::visit(Divide* node)
     left->accept(this);
     right->accept(this);
 
-    emitter.movesd_reg_reg(register_allocation[left.get()], register_allocation[node]);
-    emitter.divsd(register_allocation[right.get()], register_allocation[node]);
+    int right_register = register_allocation[right.get()];
+    int left_register = register_allocation[left.get()];
+    int node_register = register_allocation[node];
+    if (left_register == node_register) {
+        emitter.movesd_reg_reg(left_register, node_register);
+        emitter.divsd(right_register, node_register);
+    }else {
+        emitter.divsd(left_register, right_register);
+        emitter.movesd_reg_reg(right_register, node_register);
+    }
 }

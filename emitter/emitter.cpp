@@ -4,39 +4,33 @@
 #include <stdlib.h>
 #include <cstring>
 
-void Emitter::movsd_imm_to_xmm(double value, char reg) 
+void Emitter::clear()
 {
-    // 1. Allocate memory to store the immediate double value.
-    // We'll use mmap to create a writable region for storing the double.
-    char* temp_mem = (char*) mmap(nullptr, sizeof(double), PROT_READ | PROT_WRITE, 
-                                  MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    
-    if (temp_mem == MAP_FAILED) {
-        perror("mmap");
-        return;
-    }
+    instructions.clear();
+}
 
-    // Store the immediate double value in the allocated memory.
-    std::memcpy(temp_mem, &value, sizeof(double));
+void Emitter::movsd_imm_to_xmm(double value, int reg) 
+{
+    double* value_ptr = (double*) malloc(sizeof(double));
+    *value_ptr = value;
 
-    // 2. Generate the machine instructions:
-    // - Move the memory address of the temp location into a general-purpose register, like RSI.
-    // - Use the `movsd` instruction to load the value from [RSI] into the XMM register.
-
-    // Instruction: mov rsi, <temp_mem_address>
     instructions.push_back(0x48);          // REX.W prefix for 64-bit operation
     instructions.push_back(0xbe);          // mov rsi, imm64 opcode (mov rsi, <address>)
-    long long addr = (long long) temp_mem; // Get the address of the temp memory
+    long long addr = reinterpret_cast<long long>(value_ptr); // Get the address of the double value
     for (int i = 0; i < 8; ++i) {
         instructions.push_back((addr >> (i * 8)) & 0xff); // Push 8 bytes of the address
     }
 
-    // Instruction: movsd xmm<reg>, [rsi]
-    // This moves the double value from memory at [RSI] to the XMM register.
-    char prefix = 0xf2;                    // Operand-size prefix for MOVSD (SSE2)
-    char opcode_prefix = 0x0f;             // Opcode prefix for SIMD instructions
-    char opcode = 0x10;                    // Opcode for movsd (memory to register)
-    char modrm = 0x06 | (reg << 3);        // ModR/M byte (00 | reg << 3 | RSI)
+    int prefix = 0xf2;                    // Operand-size prefix for MOVSD (SSE2)
+    int opcode_prefix = 0x0f;             // Opcode prefix for SIMD instructions
+    int opcode = 0x10;                    // Opcode for movsd (memory to register)
+    
+    // Check if using extended XMM register
+    if (reg >= 8) {
+        instructions.push_back(0x41); // REX prefix to use XMM8-XMM15
+    }
+
+    int modrm = 0x06 | (reg << 3);        // ModR/M byte (00 | reg << 3 | RSI)
 
     // Add the MOVSD instruction to the instruction stream
     instructions.push_back(prefix);        // f2 prefix for MOVSD
@@ -45,12 +39,18 @@ void Emitter::movsd_imm_to_xmm(double value, char reg)
     instructions.push_back(modrm);         // ModR/M byte
 }
 
-void Emitter::movesd_reg_memory(char reg, char displacement)
+void Emitter::movesd_reg_memory(int reg, int displacement)
 {
-    char prefix = 0xf2;
-    char opcode_prefix = 0x0f;
-    char opcode = 0x11;
-    char mod = 0x47 | reg << 3; // using the address at rdi + given displacement
+    int prefix = 0xf2;
+    int opcode_prefix = 0x0f;
+    int opcode = 0x11;
+
+    // Check if using extended XMM register
+    if (reg >= 8) {
+        instructions.push_back(0x41); // REX prefix to use XMM8-XMM15
+    }
+
+    int mod = 0x47 | (reg << 3); // using the address at rdi + given displacement
 
     instructions.push_back(prefix);
     instructions.push_back(opcode_prefix);
@@ -59,12 +59,18 @@ void Emitter::movesd_reg_memory(char reg, char displacement)
     instructions.push_back(displacement);
 }
 
-void Emitter::movesd_memory_reg(char reg, char displacement)
+void Emitter::movesd_memory_reg(int reg, int displacement)
 {
-    char prefix = 0xf2;
-    char opcode_prefix = 0x0f;
-    char opcode = 0x10;
-    char mod = 0x47 | reg << 3; // using the address at rdi + given displacement
+    int prefix = 0xf2;
+    int opcode_prefix = 0x0f;
+    int opcode = 0x10;
+
+    // Check if using extended XMM register
+    if (reg >= 8) {
+        instructions.push_back(0x41); // REX prefix to use XMM8-XMM15
+    }
+
+    int mod = 0x47 | (reg << 3); // using the address at rdi + given displacement
 
     instructions.push_back(prefix);
     instructions.push_back(opcode_prefix);
@@ -73,12 +79,18 @@ void Emitter::movesd_memory_reg(char reg, char displacement)
     instructions.push_back(displacement);
 }
 
-void Emitter::movesd_reg_reg(char src, char dest)
+void Emitter::movesd_reg_reg(int src, int dest)
 {
-    char prefix = 0xf2;
-    char opcode_prefix = 0x0f;
-    char opcode = 0x11;
-    char mod = 0xc0 | src << 3 | dest;
+    int prefix = 0xf2;
+    int opcode_prefix = 0x0f;
+    int opcode = 0x11;
+
+    // Check if using extended XMM registers
+    if (src >= 8 || dest >= 8) {
+        instructions.push_back(0x41); // REX prefix for extended registers
+    }
+
+    int mod = 0xc0 | (src << 3) | dest;
 
     instructions.push_back(prefix);
     instructions.push_back(opcode_prefix);
@@ -86,12 +98,18 @@ void Emitter::movesd_reg_reg(char src, char dest)
     instructions.push_back(mod);
 }
 
-void Emitter::addsd(char src, char dest)
+void Emitter::addsd(int src, int dest)
 {
-    char prefix = 0xf2;
-    char opcode_prefix = 0x0f;
-    char opcode = 0x58;
-    char mod = 0xc0 | dest << 3 | src;
+    int prefix = 0xf2;
+    int opcode_prefix = 0x0f;
+    int opcode = 0x58;
+
+    // Check if using extended XMM registers
+    if (src >= 8 || dest >= 8) {
+        instructions.push_back(0x41); // REX prefix for extended registers
+    }
+
+    int mod = 0xc0 | (dest << 3) | src;
 
     instructions.push_back(prefix);
     instructions.push_back(opcode_prefix);
@@ -99,12 +117,18 @@ void Emitter::addsd(char src, char dest)
     instructions.push_back(mod);
 }
 
-void Emitter::subsd(char src, char dest)
+void Emitter::subsd(int src, int dest)
 {
-    char prefix = 0xf2;
-    char opcode_prefix = 0x0f;
-    char opcode = 0x5c;
-    char mod = 0xc0 | dest << 3 | src;
+    int prefix = 0xf2;
+    int opcode_prefix = 0x0f;
+    int opcode = 0x5c;
+
+    // Check if using extended XMM registers
+    if (src >= 8 || dest >= 8) {
+        instructions.push_back(0x41); // REX prefix for extended registers
+    }
+
+    int mod = 0xc0 | (dest << 3) | src;
 
     instructions.push_back(prefix);
     instructions.push_back(opcode_prefix);
@@ -112,12 +136,18 @@ void Emitter::subsd(char src, char dest)
     instructions.push_back(mod);
 }
 
-void Emitter::mulsd(char src, char dest)
+void Emitter::mulsd(int src, int dest)
 {
-    char prefix = 0xf2;
-    char opcode_prefix = 0x0f;
-    char opcode = 0x59;
-    char mod = 0xc0 | dest << 3 | src;
+    int prefix = 0xf2;
+    int opcode_prefix = 0x0f;
+    int opcode = 0x59;
+
+    // Check if using extended XMM registers
+    if (src >= 8 || dest >= 8) {
+        instructions.push_back(0x41); // REX prefix for extended registers
+    }
+
+    int mod = 0xc0 | (dest << 3) | src;
 
     instructions.push_back(prefix);
     instructions.push_back(opcode_prefix);
@@ -125,12 +155,18 @@ void Emitter::mulsd(char src, char dest)
     instructions.push_back(mod);
 }
 
-void Emitter::divsd(char src, char dest)
+void Emitter::divsd(int src, int dest)
 {
-    char prefix = 0xf2;
-    char opcode_prefix = 0x0f;
-    char opcode = 0x5e;
-    char mod = 0xc0 | dest << 3 | src;
+    int prefix = 0xf2;
+    int opcode_prefix = 0x0f;
+    int opcode = 0x5e;
+
+    // Check if using extended XMM registers
+    if (src >= 8 || dest >= 8) {
+        instructions.push_back(0x41); // REX prefix for extended registers
+    }
+
+    int mod = 0xc0 | (dest << 3) | src;
 
     instructions.push_back(prefix);
     instructions.push_back(opcode_prefix);
@@ -156,9 +192,11 @@ compiled Emitter::compile()
         code[i] = instructions[i];
     }
 
-    code[size - 1] = 0xc3;
+    code[size - 1] = 0xc3; // Return instruction (ret)
 
     std::memcpy(mem, code, size);
+
+    free(code); // Free allocated memory for code buffer
 
     return (compiled) mem;
 }

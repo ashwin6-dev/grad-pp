@@ -12,12 +12,20 @@ std::shared_ptr<Node> build_model_graph(std::shared_ptr<Node> input, std::shared
 int main()
 {
     std::shared_ptr<Variable> w = make_variable(10.0);
-    std::shared_ptr<Variable> b = make_variable(1.0);
+    std::shared_ptr<Variable> b = make_variable(5.0);
+    std::shared_ptr<Node> y = make_multiply(make_add(w, b), b);
 
     RegisterAllocator ra;
     Emitter emitter;
     JITVisitor jit(ra, emitter);
+    EvaluationVisitor ev;
 
+    compiled func = jit.jit(y);
+
+    std::cout << func(nullptr) << std::endl;
+    std::cout << ev.evaluate(y, nullptr) << std::endl;
+
+    /*
     double inputs[] = { 1.0 };
     double outputs[] = { 3.0 };
 
@@ -26,7 +34,7 @@ int main()
     for (int i = 0; i < sizeof(inputs) / sizeof(inputs[0]); i++) {
         std::shared_ptr<Node> model_graph = build_model_graph(make_const(inputs[i]), w, b);
         std::shared_ptr<Node> error = make_subtract(model_graph, make_const(outputs[i]));
-        std::shared_ptr<Node> loss = make_multiply(error, error);
+        std::shared_ptr<Node> loss = error;
 
         total_loss = make_add(loss, total_loss);
     }
@@ -51,6 +59,7 @@ int main()
         double bg = b_jit(nullptr);
 
         std::cout << wg << " " << ev.evaluate(w_grad, nullptr) << std::endl;
+        std::cout << bg << " " << ev.evaluate(b_grad, nullptr) << std::endl;
         std::cout << "loss " << loss << std::endl;
 
         w->set_value(w->get_value() - 0.01 * wg);
@@ -60,4 +69,5 @@ int main()
         w_jit = jit.jit(w_grad);
         b_jit = jit.jit(b_grad);
     }
+    */
 }
