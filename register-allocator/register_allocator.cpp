@@ -4,8 +4,8 @@
 
 RegisterMap RegisterAllocator::allocate_registers(std::shared_ptr<Node> graph)
 {
-    available_registers = std::vector<int> {};
-    live_intervals = std::unordered_map<Node*, LiveInterval> {};
+    available_registers.clear();
+    live_intervals.clear();
     register_map.clear();
     time = 0;
     graph->accept(this);
@@ -18,7 +18,7 @@ RegisterMap RegisterAllocator::allocate_registers(std::shared_ptr<Node> graph)
     std::sort(sorted_intervals.begin(), sorted_intervals.end(), [](const LiveInterval& a, const LiveInterval& b) {
         return a.start < b.start;
     });
-
+    
     int MAX_REGISTERS = 7;
 
     for (int reg = 0; reg <= MAX_REGISTERS; reg++) {
@@ -28,6 +28,8 @@ RegisterMap RegisterAllocator::allocate_registers(std::shared_ptr<Node> graph)
     for (size_t i = 0; i < sorted_intervals.size();) {
         Node* node = sorted_intervals[i].node;
 
+        // std::cout << sorted_intervals[i].start << " " << sorted_intervals[i].end << std::endl;
+
         int prev_size = sorted_intervals.size();
         expire_old_intervals(sorted_intervals, sorted_intervals[i].start);
         int new_size = sorted_intervals.size();
@@ -36,6 +38,7 @@ RegisterMap RegisterAllocator::allocate_registers(std::shared_ptr<Node> graph)
             int reg = available_registers.back();
             available_registers.pop_back();
             register_map[node] = reg;
+            // std::cout << reg << std::endl;
         } else {
             std::cout << "no registers available" << std::endl;
         }
@@ -124,7 +127,7 @@ void RegisterAllocator::update_live_interval(Node* node) {
         lv.start = std::min(lv.start, time);
         lv.end = std::max(lv.end, time);
     } else {
-        LiveInterval lv = { node, time, time };
+        LiveInterval lv = { node, time, time+1 };
         live_intervals[node] = lv;
     }
 }

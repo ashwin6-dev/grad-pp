@@ -1,0 +1,21 @@
+graph computation_graph {
+edge [dir=none];
+node [shape=none];
+node15 [label=< <font color="black">*</font> >];
+node16 [label=< <font color="black">+</font> >];
+node17 [label=< <font color="black">*</font> >];
+node18 [label=< <font color="black">Const[5]</font> >];
+x [label=< <font color="red">x</font> >];
+node17 -- node18;
+node17 -- x;
+node19 [label=< <font color="black">*</font> >];
+node20 [label=< <font color="black">Const[10]</font> >];
+x [label=< <font color="red">x</font> >];
+node19 -- node20;
+node19 -- x;
+node16 -- node17;
+node16 -- node19;
+node21 [label=< <font color="black">Const[1]</font> >];
+node15 -- node16;
+node15 -- node21;
+}

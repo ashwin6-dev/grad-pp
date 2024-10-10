@@ -47,13 +47,8 @@ void JITVisitor::visit(Add* node)
     int left_register = register_allocation[left.get()];
     int node_register = register_allocation[node];
 
-    if (left_register == node_register) {
-        emitter.movesd_reg_reg(left_register, node_register);
-        emitter.addsd(right_register, node_register);
-    }else {
-        emitter.movesd_reg_reg(right_register, node_register);
-        emitter.addsd(left_register, node_register);
-    }
+    emitter.addsd(right_register, left_register);
+    emitter.movesd_reg_reg(left_register, node_register);
 }
 
 void JITVisitor::visit(Subtract* node)
@@ -68,13 +63,8 @@ void JITVisitor::visit(Subtract* node)
     int left_register = register_allocation[left.get()];
     int node_register = register_allocation[node];
 
-    if (left_register == node_register) {
-        emitter.movesd_reg_reg(left_register, node_register);
-        emitter.subsd(right_register, node_register);
-    }else {
-        emitter.subsd(right_register, left_register);
-        emitter.movesd_reg_reg(left_register, node_register);
-    }
+    emitter.subsd(right_register, left_register);
+    emitter.movesd_reg_reg(left_register, node_register);
 }
 
 void JITVisitor::visit(Multiply* node)
@@ -89,13 +79,8 @@ void JITVisitor::visit(Multiply* node)
     int left_register = register_allocation[left.get()];
     int node_register = register_allocation[node];
 
-    if (left_register == node_register) {
-        emitter.movesd_reg_reg(left_register, node_register);
-        emitter.mulsd(right_register, node_register);
-    }else {
-        emitter.movesd_reg_reg(right_register, node_register);
-        emitter.mulsd(left_register, node_register);
-    }
+    emitter.mulsd(right_register, left_register);
+    emitter.movesd_reg_reg(left_register, node_register);
 }
 
 void JITVisitor::visit(Divide* node)
@@ -110,11 +95,6 @@ void JITVisitor::visit(Divide* node)
     int left_register = register_allocation[left.get()];
     int node_register = register_allocation[node];
     
-    if (left_register == node_register) {
-        emitter.movesd_reg_reg(left_register, node_register);
-        emitter.divsd(right_register, node_register);
-    }else {
-        emitter.divsd(right_register, left_register);
-        emitter.movesd_reg_reg(left_register, node_register);
-    }
+    emitter.divsd(right_register, left_register);
+    emitter.movesd_reg_reg(left_register, node_register);
 }
