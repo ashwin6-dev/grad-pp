@@ -6,12 +6,7 @@
 #include "../jit/headers/jit.h"
 #include "../eval-visitor/headers/eval_visitor.h"
 
-std::shared_ptr<Node> build_model_graph(std::shared_ptr<Node> input, std::shared_ptr<Node> w, std::shared_ptr<Node> b)
-{
-    return make_add(make_multiply(input, w), b);
-}
-
-int main()
+void performance()
 {
     std::shared_ptr<Variable> w = make_variable(10.0);
     std::shared_ptr<Variable> b = make_variable(5.0);
@@ -25,12 +20,12 @@ int main()
 
     // JIT-Compiled Execution Timing
     auto start_jit = std::chrono::high_resolution_clock::now();
-    compiled func = jit.jit(y);
+    compiled jit_func = jit.jit(y);
     
     const int iterations = 10000;
     double result_jit = 0;
     for (int i = 0; i < iterations; ++i) {
-        result_jit += func(nullptr);
+        result_jit += jit_func(nullptr);
     }
     auto end_jit = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> jit_duration = end_jit - start_jit;
@@ -52,6 +47,4 @@ int main()
     std::cout << "Performance ratio (non-JIT/JIT): " 
               << (nonjit_duration.count() / jit_duration.count()) 
               << "x slower in interpreted mode" << std::endl;
-
-    return 0;
 }

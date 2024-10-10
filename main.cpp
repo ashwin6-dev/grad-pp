@@ -15,8 +15,7 @@ int main()
 {
     std::shared_ptr<Variable> w = make_variable(10.0);
     std::shared_ptr<Variable> b = make_variable(5.0);
-    std::shared_ptr<Node> y = make_add(b, make_multiply(make_add(w, b), b));
-    y = make_divide(make_multiply(y, y), w);
+    std::shared_ptr<Node> y = make_subtract(b, make_multiply(make_add(w, b), b));
 
     RegisterAllocator ra;
     Emitter emitter;

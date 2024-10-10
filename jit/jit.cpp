@@ -72,8 +72,8 @@ void JITVisitor::visit(Subtract* node)
         emitter.movesd_reg_reg(left_register, node_register);
         emitter.subsd(right_register, node_register);
     }else {
-        emitter.subsd(left_register, right_register);
-        emitter.movesd_reg_reg(right_register, node_register);
+        emitter.subsd(right_register, left_register);
+        emitter.movesd_reg_reg(left_register, node_register);
     }
 }
 
