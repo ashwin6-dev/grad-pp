@@ -109,11 +109,12 @@ void JITVisitor::visit(Divide* node)
     int right_register = register_allocation[right.get()];
     int left_register = register_allocation[left.get()];
     int node_register = register_allocation[node];
+    
     if (left_register == node_register) {
         emitter.movesd_reg_reg(left_register, node_register);
         emitter.divsd(right_register, node_register);
     }else {
-        emitter.divsd(left_register, right_register);
-        emitter.movesd_reg_reg(right_register, node_register);
+        emitter.divsd(right_register, left_register);
+        emitter.movesd_reg_reg(left_register, node_register);
     }
 }
