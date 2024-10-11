@@ -1,0 +1,37 @@
+graph computation_graph {
+edge [dir=none];
+node [shape=none];
+node0 [label=< <font color="black">+[7]</font> >];
+node1 [label=< <font color="black">Const[0] [6]</font> >];
+node2 [label=< <font color="black">*[7]</font> >];
+node3 [label=< <font color="black">-[7]</font> >];
+node4 [label=< <font color="black">+[4]</font> >];
+node5 [label=< <font color="black">*[4]</font> >];
+w [label=< <font color="red">w[4]</font> >];
+node6 [label=< <font color="black">Const[1] [5]</font> >];
+node5 -- w;
+node5 -- node6;
+b [label=< <font color="red">b[5]</font> >];
+node4 -- node5;
+node4 -- b;
+node7 [label=< <font color="black">Const[100] [5]</font> >];
+node3 -- node4;
+node3 -- node7;
+node8 [label=< <font color="black">-[7]</font> >];
+node9 [label=< <font color="black">+[4]</font> >];
+node10 [label=< <font color="black">*[4]</font> >];
+w [label=< <font color="red">w[4]</font> >];
+node11 [label=< <font color="black">Const[1] [5]</font> >];
+node10 -- w;
+node10 -- node11;
+b [label=< <font color="red">b[5]</font> >];
+node9 -- node10;
+node9 -- b;
+node12 [label=< <font color="black">Const[100] [5]</font> >];
+node8 -- node9;
+node8 -- node12;
+node2 -- node8;
+node2 -- node8;
+node0 -- node1;
+node0 -- node2;
+}

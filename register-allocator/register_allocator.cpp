@@ -18,8 +18,8 @@ RegisterMap RegisterAllocator::allocate_registers(std::shared_ptr<Node> graph)
     std::sort(sorted_intervals.begin(), sorted_intervals.end(), [](const LiveInterval& a, const LiveInterval& b) {
         return a.start < b.start;
     });
-    
-    int MAX_REGISTERS = 7;
+
+    int MAX_REGISTERS = 15;
 
     for (int reg = 0; reg <= MAX_REGISTERS; reg++) {
         available_registers.push_back(reg);
@@ -86,6 +86,8 @@ void RegisterAllocator::visit(Add* node) {
 
     time = saved_time;
     node->get_right()->accept(this);
+
+    update_live_interval(node->get_left().get());
 }
 
 void RegisterAllocator::visit(Subtract* node) {
@@ -97,6 +99,8 @@ void RegisterAllocator::visit(Subtract* node) {
 
     time = saved_time;
     node->get_right()->accept(this);
+
+    update_live_interval(node->get_left().get());
 }
 
 void RegisterAllocator::visit(Multiply* node) {
@@ -108,6 +112,8 @@ void RegisterAllocator::visit(Multiply* node) {
 
     time = saved_time;
     node->get_right()->accept(this);
+
+    update_live_interval(node->get_left().get());
 }
 
 void RegisterAllocator::visit(Divide* node) {
@@ -119,6 +125,8 @@ void RegisterAllocator::visit(Divide* node) {
 
     time = saved_time;
     node->get_right()->accept(this);
+
+    update_live_interval(node->get_left().get());
 }
 
 void RegisterAllocator::update_live_interval(Node* node) {
@@ -127,7 +135,7 @@ void RegisterAllocator::update_live_interval(Node* node) {
         lv.start = std::min(lv.start, time);
         lv.end = std::max(lv.end, time);
     } else {
-        LiveInterval lv = { node, time, time+1 };
+        LiveInterval lv = { node, time, time };
         live_intervals[node] = lv;
     }
 }

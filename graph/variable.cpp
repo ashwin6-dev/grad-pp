@@ -16,6 +16,11 @@ void Variable::set_value(double value)
     this->value = value;
 }
 
+double* Variable::get_value_address()
+{
+    return &value;
+}
+
 std::shared_ptr<Variable> make_variable(double value)
 {
     return std::make_shared<Variable>(value);

@@ -1,5 +1,5 @@
-#include "./demos/headers/performance.h"
+#include "./demos/headers/linear_regression.h"
 
 int main() {
-    performance();
+    linear_regression();
 }

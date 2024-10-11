@@ -10,13 +10,15 @@ compiled JITVisitor::jit(std::shared_ptr<Node> graph)
     graph->accept(this);
 
     emitter.movesd_reg_reg(register_allocation[graph.get()], 0);
+    compiled func = emitter.compile();
 
-    return emitter.compile();
+    return func;
 }
 
 void JITVisitor::visit(Variable* node) 
 {
     emitter.movsd_imm_to_xmm(node->get_value(), register_allocation[node]);
+    // emitter.movsd_pointer_xmm(node->get_value_address(), register_allocation[node]);
 }
 
 void JITVisitor::visit(Const* node)
@@ -94,7 +96,7 @@ void JITVisitor::visit(Divide* node)
     int right_register = register_allocation[right.get()];
     int left_register = register_allocation[left.get()];
     int node_register = register_allocation[node];
-    
+
     emitter.divsd(right_register, left_register);
     emitter.movesd_reg_reg(left_register, node_register);
 }

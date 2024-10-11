@@ -20,9 +20,10 @@ public:
     void visit(Divide* node) override;
 
     std::string get_dot_representation(std::shared_ptr<Node> graph, std::unordered_map<Node*, std::string> var_names);
-
+    std::string get_dot_reg_representation(std::shared_ptr<Node> graph, std::unordered_map<Node*, std::string> var_names, std::unordered_map<Node*, int> ralloc);
 private:
     std::unordered_map<Node*, std::string> node_map;
+    std::unordered_map<Node*, int> reg_alloc;
     int var_count;
     int node_count;
     std::string generate_variable_name();

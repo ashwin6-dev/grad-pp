@@ -3,6 +3,8 @@
 #include <sys/mman.h>
 #include <stdlib.h>
 #include <cstring>
+#include <iostream>
+#include <stdint.h>
 
 void Emitter::clear()
 {
@@ -11,8 +13,7 @@ void Emitter::clear()
 
 void Emitter::movsd_imm_to_xmm(double value, int reg) 
 {
-    double* value_ptr = (double*) malloc(sizeof(double));
-    *value_ptr = value;
+    double* value_ptr = new double(value);
 
     instructions.push_back(0x48);          // REX.W prefix for 64-bit operation
     instructions.push_back(0xbe);          // mov rsi, imm64 opcode (mov rsi, <address>)
@@ -77,6 +78,34 @@ void Emitter::movesd_memory_reg(int reg, int displacement)
     instructions.push_back(opcode);
     instructions.push_back(mod);
     instructions.push_back(displacement);
+}
+
+void Emitter::movsd_pointer_xmm(void* address, int reg)
+{
+    int prefix = 0xf2;           // Prefix for MOVSD
+    int opcode_prefix = 0x0f;    // Common prefix for SIMD instructions
+    int opcode = 0x10;           // MOVSD opcode (memory to XMM register)
+    int modrm = 0x04 | (reg << 3); // ModR/M byte: mod = 00, reg = XMM reg, r/m = 100 (SIB follows)
+    int sib = 0x25;              // SIB byte for absolute addressing
+
+    // Check if using extended XMM register (XMM8-XMM15 requires REX prefix)
+    if (reg >= 8) {
+        instructions.push_back(0x44); // REX.R prefix to access extended registers
+    }
+
+    // Add instruction prefixes and opcode
+    instructions.push_back(0x48);
+    instructions.push_back(prefix);
+    instructions.push_back(opcode_prefix);
+    instructions.push_back(opcode);
+    instructions.push_back(modrm);
+    instructions.push_back(sib);
+
+    // Add the 64-bit absolute address
+    uint64_t addr = reinterpret_cast<uint64_t>(address);
+    for (int i = 0; i < 8; ++i) {
+        instructions.push_back(0xff & (addr >> (i * 8)));
+    }
 }
 
 void Emitter::movesd_reg_reg(int src, int dest)

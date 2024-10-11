@@ -12,6 +12,7 @@ public:
     void movesd_reg_memory(int reg, int displacement);     // Changed char to int
     void movesd_memory_reg(int reg, int displacement);     // Changed char to int
     void movesd_reg_reg(int src, int dest);                // Changed char to int
+    void movsd_pointer_xmm(void* address, int reg);
     void mulsd(int src, int dest);                          // Changed char to int
     void addsd(int src, int dest);                          // Changed char to int
     void subsd(int src, int dest);                          // Changed char to int

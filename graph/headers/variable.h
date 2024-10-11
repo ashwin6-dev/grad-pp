@@ -8,6 +8,7 @@ public:
     void accept(Visitor* visit) override;
     double get_value();
     void set_value(double value);
+    double* get_value_address();
     
 private:
     double value;
