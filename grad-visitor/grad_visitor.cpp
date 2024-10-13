@@ -1,11 +1,17 @@
 #include "headers/grad_visitor.h"
 
+GradVisitor make_grad_visitor()
+{
+    GradVisitor gv;
+    return gv;
+}
+
 GradientMap GradVisitor::backward(std::shared_ptr<Node> graph)
 {
     gradient_map[graph.get()] = make_const(1.0);
     graph->accept(this);
 
-    return gradient_map;
+    return var_gradients;
 }
 
 void GradVisitor::apply_gradient(Node* node, std::shared_ptr<Node> gradient) {
@@ -21,9 +27,10 @@ void GradVisitor::apply_gradient(Node* node, std::shared_ptr<Node> gradient) {
     gradient_map[node] = gradient;
 }
 
-void GradVisitor::visit(Variable* node) {}
-void GradVisitor::visit(Const* node) {}
-void GradVisitor::visit(Input* node) {}
+void GradVisitor::visit(Variable* node)
+{
+    var_gradients[node] = gradient_map[node];
+}
 
 void GradVisitor::visit(Add* node)
 {
@@ -84,3 +91,6 @@ void GradVisitor::visit(Divide* node)
     left->accept(this);
     right->accept(this);
 }
+
+void GradVisitor::visit(Const* node) {}
+void GradVisitor::visit(Input* node) {}

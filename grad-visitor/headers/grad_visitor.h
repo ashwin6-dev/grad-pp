@@ -7,6 +7,7 @@ using GradientMap = std::unordered_map<Node*, std::shared_ptr<Node>>;
 class GradVisitor : public Visitor {
 private:
     GradientMap gradient_map;
+    GradientMap var_gradients;
 
 public:
     void visit(Variable* node) override;
@@ -20,3 +21,5 @@ public:
     GradientMap backward(std::shared_ptr<Node> graph);
     void apply_gradient(Node* node, std::shared_ptr<Node> gradient);
 };
+
+GradVisitor make_grad_visitor();

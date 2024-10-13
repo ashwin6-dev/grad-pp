@@ -58,11 +58,18 @@ void DotVisitor::visit(Add* node) {
         dot_output << add_name << " [label=< <font color=\"black\">+</font> >];\n";
     }
 
-    node->get_left()->accept(this);
-    node->get_right()->accept(this);
+    Node* left_ptr = node->get_left().get();
+    Node* right_ptr = node->get_right().get();
 
+    node->get_left()->accept(this);
     dot_output << add_name << " -- " << node_map[node->get_left().get()] << ";\n";
-    dot_output << add_name << " -- " << node_map[node->get_right().get()] << ";\n";
+
+    if (left_ptr != right_ptr) {
+        node->get_right()->accept(this);
+        dot_output << add_name << " -- " << node_map[node->get_right().get()] << ";\n";
+    }else {
+        dot_output << add_name << " -- " << node_map[node->get_left().get()] << ";\n";
+    }
 }
 
 void DotVisitor::visit(Subtract* node) {
@@ -75,11 +82,18 @@ void DotVisitor::visit(Subtract* node) {
         dot_output << sub_name << " [label=< <font color=\"black\">-</font> >];\n";
     }
 
-    node->get_left()->accept(this);
-    node->get_right()->accept(this);
+    Node* left_ptr = node->get_left().get();
+    Node* right_ptr = node->get_right().get();
 
+    node->get_left()->accept(this);
     dot_output << sub_name << " -- " << node_map[node->get_left().get()] << ";\n";
-    dot_output << sub_name << " -- " << node_map[node->get_right().get()] << ";\n";
+
+    if (left_ptr != right_ptr) {
+        node->get_right()->accept(this);
+        dot_output << sub_name << " -- " << node_map[node->get_right().get()] << ";\n";
+    }else {
+        dot_output << sub_name << " -- " << node_map[node->get_left().get()] << ";\n";
+    }
 }
 
 void DotVisitor::visit(Multiply* node) {
@@ -92,11 +106,19 @@ void DotVisitor::visit(Multiply* node) {
         dot_output << mul_name << " [label=< <font color=\"black\">*</font> >];\n";
     }
 
-    node->get_left()->accept(this);
-    node->get_right()->accept(this);
+    Node* left_ptr = node->get_left().get();
+    Node* right_ptr = node->get_right().get();
 
+    node->get_left()->accept(this);
     dot_output << mul_name << " -- " << node_map[node->get_left().get()] << ";\n";
-    dot_output << mul_name << " -- " << node_map[node->get_right().get()] << ";\n";
+
+    if (left_ptr != right_ptr) {
+        node->get_right()->accept(this);
+        dot_output << mul_name << " -- " << node_map[node->get_right().get()] << ";\n";
+    }else {
+        dot_output << mul_name << " -- " << node_map[node->get_left().get()] << ";\n";
+    }
+    
 }
 
 void DotVisitor::visit(Divide* node) {
@@ -109,11 +131,19 @@ void DotVisitor::visit(Divide* node) {
         dot_output << div_name << " [label=< <font color=\"black\">/</font> >];\n";
     }
 
-    node->get_left()->accept(this);
-    node->get_right()->accept(this);
+    Node* left_ptr = node->get_left().get();
+    Node* right_ptr = node->get_right().get();
 
+    node->get_left()->accept(this);
     dot_output << div_name << " -- " << node_map[node->get_left().get()] << ";\n";
-    dot_output << div_name << " -- " << node_map[node->get_right().get()] << ";\n";
+
+    if (left_ptr != right_ptr) {
+        node->get_right()->accept(this);
+        dot_output << div_name << " -- " << node_map[node->get_right().get()] << ";\n";
+    }else {
+        dot_output << div_name << " -- " << node_map[node->get_left().get()] << ";\n";
+    }
+    
 }
 
 // Get the final DOT representation

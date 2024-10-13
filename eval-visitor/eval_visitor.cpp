@@ -1,5 +1,10 @@
 #include "headers/eval_visitor.h"
 
+EvaluationVisitor make_evaluation_visitor()
+{
+    EvaluationVisitor ev;
+    return ev;
+}
 // Constructor to initialize the result
 EvaluationVisitor::EvaluationVisitor() : result(0.0) {}
 

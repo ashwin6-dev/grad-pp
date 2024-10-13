@@ -1,11 +1,12 @@
 #pragma once
 
 #include "../../visitor/headers/visitor.h"
-
+#include <algorithm>
+#include <iostream>
 #include <unordered_map>
 #include <vector>
-
-using RegisterMap = std::unordered_map<Node*, int>;
+#include <queue>
+#include <unordered_set>
 
 struct LiveInterval {
     Node* node;
@@ -13,25 +14,35 @@ struct LiveInterval {
     int end;
 };
 
+using RegisterMap = std::unordered_map<Node*, int>;
+
 class RegisterAllocator : public Visitor {
-private:
-    RegisterMap register_map;
-    std::vector<int> available_registers;
-    std::vector<int> used_registers;
-    std::unordered_map<Node*, LiveInterval> live_intervals;
-    int time;
-
 public:
-    void visit(Variable* node) override;
-    void visit(Const* node) override;
-    void visit(Input* node) override;
-    void visit(Add* node) override;
-    void visit(Subtract* node) override;
-    void visit(Multiply* node) override;
-    void visit(Divide* node) override;
-
     RegisterMap allocate_registers(std::shared_ptr<Node> graph);
-    void expire_old_intervals(std::vector<LiveInterval> &intervals, int start_time);
+    
+private:
+    int next_reg(Node* node);
+    void mark_taken(Node* node, int reg);
+    void mark_taken_rec(Node* node, int reg);
+    void mark_taken_in_sibling_subtree(Node* node, int reg);
     void update_live_interval(Node* node);
-    void allocate_node(Node* node, int reg = -1);
+    void build_live_intervals(std::shared_ptr<Node> graph);
+    void allocate_registers_using_live_analysis();
+    std::vector<int> get_available_registers(std::vector<Node*> nodes);
+    
+    void visit(Variable* node);
+    void visit(Const* node);
+    void visit(Input* node);
+    void visit_operation(OperationNode* node);
+    void visit(Add* node);
+    void visit(Subtract* node);
+    void visit(Multiply* node);
+    void visit(Divide* node);
+    
+    std::unordered_map<Node*, std::vector<int>> taken_registers;
+    std::unordered_map<Node*, LiveInterval> live_intervals;
+    std::unordered_map<Node*, Node*> right_sibling;
+    RegisterMap register_map;
+    
+    int current_time = 0; // Tracks the current position in the program order
 };

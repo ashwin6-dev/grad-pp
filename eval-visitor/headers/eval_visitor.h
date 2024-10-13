@@ -25,3 +25,5 @@ private:
     std::unordered_map<Node*, double> input_map;
     int input_idx = 0;
 };
+
+EvaluationVisitor make_evaluation_visitor();

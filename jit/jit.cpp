@@ -41,13 +41,15 @@ void JITVisitor::visit(Add* node)
 {
     std::shared_ptr<Node> left = node->get_left();
     std::shared_ptr<Node> right = node->get_right();
-
-    left->accept(this);
-    right->accept(this);
-
+    
     int right_register = register_allocation[right.get()];
     int left_register = register_allocation[left.get()];
     int node_register = register_allocation[node];
+
+    left->accept(this);
+    emitter.push_xmm(left_register);
+    right->accept(this);
+    emitter.pop_xmm(left_register);
 
     emitter.addsd(right_register, left_register);
     emitter.movesd_reg_reg(left_register, node_register);
@@ -58,12 +60,14 @@ void JITVisitor::visit(Subtract* node)
     std::shared_ptr<Node> left = node->get_left();
     std::shared_ptr<Node> right = node->get_right();
 
-    left->accept(this);
-    right->accept(this);
-
     int right_register = register_allocation[right.get()];
     int left_register = register_allocation[left.get()];
     int node_register = register_allocation[node];
+
+    left->accept(this);
+    emitter.push_xmm(left_register);
+    right->accept(this);
+    emitter.pop_xmm(left_register);
 
     emitter.subsd(right_register, left_register);
     emitter.movesd_reg_reg(left_register, node_register);
@@ -74,13 +78,15 @@ void JITVisitor::visit(Multiply* node)
     std::shared_ptr<Node> left = node->get_left();
     std::shared_ptr<Node> right = node->get_right();
 
-    left->accept(this);
-    right->accept(this);
-
     int right_register = register_allocation[right.get()];
     int left_register = register_allocation[left.get()];
     int node_register = register_allocation[node];
 
+    left->accept(this);
+    emitter.push_xmm(left_register);
+    right->accept(this);
+    emitter.pop_xmm(left_register);
+    
     emitter.mulsd(right_register, left_register);
     emitter.movesd_reg_reg(left_register, node_register);
 }
@@ -90,13 +96,16 @@ void JITVisitor::visit(Divide* node)
     std::shared_ptr<Node> left = node->get_left();
     std::shared_ptr<Node> right = node->get_right();
 
-    left->accept(this);
-    right->accept(this);
-
     int right_register = register_allocation[right.get()];
     int left_register = register_allocation[left.get()];
     int node_register = register_allocation[node];
 
+    left->accept(this);
+    emitter.push_xmm(left_register);
+    right->accept(this);
+    emitter.pop_xmm(left_register);
+
+    
     emitter.divsd(right_register, left_register);
     emitter.movesd_reg_reg(left_register, node_register);
 }

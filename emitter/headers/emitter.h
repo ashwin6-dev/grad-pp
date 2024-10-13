@@ -17,6 +17,8 @@ public:
     void addsd(int src, int dest);                          // Changed char to int
     void subsd(int src, int dest);                          // Changed char to int
     void divsd(int src, int dest);                          // Changed char to int
+    void push_xmm(int reg);
+    void pop_xmm(int reg);
     void clear();
     compiled compile();
 };

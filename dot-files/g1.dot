@@ -1,0 +1,25 @@
+graph computation_graph {
+edge [dir=none];
+node [shape=none];
+node0 [label=< <font color="black">+[15]</font> >];
+b5 [label=< <font color="red">b5[15]</font> >];
+node0 -- b5;
+node1 [label=< <font color="black">*[14]</font> >];
+w5 [label=< <font color="red">w5[14]</font> >];
+node1 -- w5;
+node2 [label=< <font color="black">+[13]</font> >];
+w5 [label=< <font color="red">w5[14]</font> >];
+node2 -- w5;
+node3 [label=< <font color="black">+[13]</font> >];
+w5 [label=< <font color="red">w5[14]</font> >];
+node3 -- w5;
+node4 [label=< <font color="black">+[13]</font> >];
+w5 [label=< <font color="red">w5[14]</font> >];
+node4 -- w5;
+b5 [label=< <font color="red">b5[15]</font> >];
+node4 -- b5;
+node3 -- node4;
+node2 -- node3;
+node1 -- node2;
+node0 -- node1;
+}
