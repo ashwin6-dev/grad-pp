@@ -14,10 +14,62 @@ void Emitter::clear()
 void Emitter::movsd_imm_to_xmm(double value, int reg) 
 {
     double* value_ptr = new double(value);
+    movsd_pointer_xmm(value_ptr, reg);
+}
 
+void Emitter::movesd_reg_memory(int reg, int displacement)
+{
+    int prefix = 0xf2;
+    int opcode_prefix = 0x0f;
+    int opcode = 0x11;
+
+    uint8_t rex = 0x40; // Base REX prefix for using XMM registers
+
+    // Set the REX.R bit if reg is 8 or greater
+    if (reg >= 8) {
+        rex |= 0x4; // Set REX.R bit for XMM8 and above
+        reg -= 8;   // Adjust reg value to fit in ModR/M
+    }
+
+    int modrm = 0x47 | (reg << 3); // 87 means [rdi + disp8]
+
+    instructions.push_back(rex);
+    instructions.push_back(prefix);
+    instructions.push_back(opcode_prefix);
+    instructions.push_back(opcode);
+    instructions.push_back(modrm);
+    instructions.push_back(displacement);
+}
+
+void Emitter::movesd_memory_reg(int reg, int displacement)
+{
+    int prefix = 0xf2;
+    int opcode_prefix = 0x0f;
+    int opcode = 0x10;
+
+    uint8_t rex = 0x40; // Base REX prefix for using XMM registers
+
+    // Set the REX.R bit if reg is 8 or greater
+    if (reg >= 8) {
+        rex |= 0x4; // Set REX.R bit for XMM8 and above
+        reg -= 8;   // Adjust reg value to fit in ModR/M
+    }
+
+    int modrm = 0x47 | (reg << 3); // 87 means [rdi + disp8]
+
+    instructions.push_back(rex);
+    instructions.push_back(prefix);
+    instructions.push_back(opcode_prefix);
+    instructions.push_back(opcode);
+    instructions.push_back(modrm);
+    instructions.push_back(displacement);
+}
+
+void Emitter::movsd_pointer_xmm(void* address, int reg) {
     instructions.push_back(0x48);          // REX.W prefix for 64-bit operation
     instructions.push_back(0xbe);          // mov rsi, imm64 opcode (mov rsi, <address>)
-    long long addr = reinterpret_cast<long long>(value_ptr); // Get the address of the double value
+    long long addr = reinterpret_cast<long long>(address); // Get the address of the double value
+
     for (int i = 0; i < 8; ++i) {
         instructions.push_back((addr >> (i * 8)) & 0xff); // Push 8 bytes of the address
     }
@@ -42,82 +94,6 @@ void Emitter::movsd_imm_to_xmm(double value, int reg)
     instructions.push_back(opcode_prefix); // 0f prefix
     instructions.push_back(opcode);        // Opcode 10 for MOVSD xmm<reg>, [rsi]
     instructions.push_back(modrm);         // ModR/M byte
-}
-
-void Emitter::movesd_reg_memory(int reg, int displacement)
-{
-    int prefix = 0xf2;
-    int opcode_prefix = 0x0f;
-    int opcode = 0x11;
-
-    uint8_t rex = 0x40; // Base REX prefix for using XMM registers
-
-    // Set the REX.R bit if reg is 8 or greater
-    if (reg >= 8) {
-        rex |= 0x4; // Set REX.R bit for XMM8 and above
-        reg -= 8;   // Adjust reg value to fit in ModR/M
-    }
-
-    int modrm = 0x87 | (reg << 3); // 87 means [rdi + disp8]
-
-    instructions.push_back(rex);
-    instructions.push_back(prefix);
-    instructions.push_back(opcode_prefix);
-    instructions.push_back(opcode);
-    instructions.push_back(modrm);
-    instructions.push_back(displacement);
-}
-
-void Emitter::movesd_memory_reg(int reg, int displacement)
-{
-    int prefix = 0xf2;
-    int opcode_prefix = 0x0f;
-    int opcode = 0x10;
-
-    uint8_t rex = 0x40; // Base REX prefix for using XMM registers
-
-    // Set the REX.R bit if reg is 8 or greater
-    if (reg >= 8) {
-        rex |= 0x4; // Set REX.R bit for XMM8 and above
-        reg -= 8;   // Adjust reg value to fit in ModR/M
-    }
-
-    int modrm = 0x87 | (reg << 3); // 87 means [rdi + disp8]
-
-    instructions.push_back(rex);
-    instructions.push_back(prefix);
-    instructions.push_back(opcode_prefix);
-    instructions.push_back(opcode);
-    instructions.push_back(modrm);
-    instructions.push_back(displacement);
-}
-
-void Emitter::movsd_pointer_xmm(void* address, int reg)
-{
-    int prefix = 0xf2;           // Prefix for MOVSD
-    int opcode_prefix = 0x0f;    // Common prefix for SIMD instructions
-    int opcode = 0x10;           // MOVSD opcode (memory to XMM register)
-    int modrm = 0x04 | (reg << 3); // ModR/M byte: mod = 00, reg = XMM reg, r/m = 100 (SIB follows)
-    int sib = 0x25;              // SIB byte for absolute addressing
-
-    uint8_t rex = 0x44; // Base REX prefix
-    if (reg >= 8) {
-        rex |= 0x4; // Set REX.R bit for XMM8 and above
-        reg -= 8;
-    }
-    
-    instructions.push_back(rex);
-    instructions.push_back(prefix);
-    instructions.push_back(opcode_prefix);
-    instructions.push_back(opcode);
-    instructions.push_back(modrm);
-    instructions.push_back(sib);
-
-    // Add the 64-bit absolute address
-    uint64_t addr = reinterpret_cast<uint64_t>(address);
-    for (int i = 0; i < 8; ++i) {
-        instructions.push_back(0xff & (addr >> (i * 8)));
-    }
 }
 
 void Emitter::movesd_reg_reg(int src, int dest)

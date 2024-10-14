@@ -1,10 +1,8 @@
 #include "./headers/performance.h"
 
 void performance() {
-    // Define a vector to hold different computation graphs
     std::vector<std::shared_ptr<Node>> graphs;
 
-    // Create different computation graphs
     std::shared_ptr<Variable> w1 = make_variable(10.0);
     std::shared_ptr<Variable> b1 = make_variable(5.0);
     graphs.push_back(make_divide(make_add(b1, make_multiply(make_add(w1, b1), b1)), w1));
@@ -32,8 +30,6 @@ void performance() {
     PrintVisitor pv;
     
     const int iterations = 10000;
-
-    // Loop through each graph and perform performance testing
     for (size_t i = 0; i < graphs.size(); ++i) {
         std::shared_ptr<Node> y = graphs[i];
 
@@ -57,7 +53,6 @@ void performance() {
         auto end_nonjit = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> nonjit_duration = end_nonjit - start_nonjit;
 
-        // Output results for the current graph
         std::cout << "Graph: ";
         y->accept(&pv);
         std::cout << std::endl;

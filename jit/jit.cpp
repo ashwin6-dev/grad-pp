@@ -17,8 +17,8 @@ compiled JITVisitor::jit(std::shared_ptr<Node> graph)
 
 void JITVisitor::visit(Variable* node) 
 {
-    emitter.movsd_imm_to_xmm(node->get_value(), register_allocation[node]);
-    // emitter.movsd_pointer_xmm(node->get_value_address(), register_allocation[node]);
+    // emitter.movsd_imm_to_xmm(node->get_value(), register_allocation[node]);
+    emitter.movsd_pointer_xmm(node->get_value_address(), register_allocation[node]);
 }
 
 void JITVisitor::visit(Const* node)
