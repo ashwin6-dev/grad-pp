@@ -10,4 +10,4 @@
 #include "../../eval-visitor/headers/eval_visitor.h"
 #include "../../dot-visitor/headers/dot_visitor.h"
 
-void linear_regression();
+void minimize_function();

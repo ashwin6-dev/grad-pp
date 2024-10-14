@@ -1,5 +1,5 @@
-#include "./demos/headers/performance.h"
+#include "./demos/headers/minimize_function.h"
 
 int main() {
-    performance();
+    minimize_function();
 }
