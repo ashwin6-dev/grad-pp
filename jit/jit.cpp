@@ -7,8 +7,8 @@ compiled JITVisitor::jit(std::shared_ptr<Node> graph)
     node_displacement.clear();
     emitter.clear();
     register_allocation = register_allocator.allocate_registers(graph);
+    
     graph->accept(this);
-
     emitter.movesd_reg_reg(register_allocation[graph.get()], 0);
     compiled func = emitter.compile();
 
