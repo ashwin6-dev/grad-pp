@@ -21,7 +21,6 @@ public:
     RegisterMap allocate_registers(std::shared_ptr<Node> graph);
     
 private:
-    int next_reg(Node* node);
     void mark_taken(Node* node, int reg);
     void mark_taken_rec(Node* node, int reg);
     void mark_taken_in_sibling_subtree(Node* node, int reg);

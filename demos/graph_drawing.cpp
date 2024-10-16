@@ -1,6 +1,6 @@
 #include "./headers/graph_drawing.h"
 
-void draw_graphs(){
+int main(){
     std::shared_ptr<Variable> x = make_variable(10.0);
     std::shared_ptr<Variable> y = make_variable(5.0);
     std::shared_ptr<Node> graph = make_multiply(

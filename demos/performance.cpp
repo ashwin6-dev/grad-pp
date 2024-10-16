@@ -1,6 +1,6 @@
 #include "./headers/performance.h"
 
-void performance() {
+int main() {
     std::vector<std::shared_ptr<Node>> graphs;
 
     std::shared_ptr<Variable> w1 = make_variable(10.0);

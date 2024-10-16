@@ -1,6 +1,6 @@
 #include "./headers/deriv.h"
 
-void deriv()
+int main()
 {
     std::shared_ptr<Variable> x = make_variable(10.0);
     std::shared_ptr<Variable> y = make_variable(5.0);
@@ -44,4 +44,6 @@ void deriv()
     generate_image_from_dot("computation_graph.dot", "computation_graph.png");
     generate_image_from_dot("x_gradient.dot", "x_gradient.png");
     generate_image_from_dot("y_gradient.dot", "y_gradient.png");
+
+    return 0;
 }

@@ -1,6 +1,6 @@
 #include "headers/emitter_demo.h"
 
-void emitter_demo()
+int main()
 {
     Emitter emitter;
     emitter.movsd_imm_to_xmm(100.0, 0); // move 100 to xmm0

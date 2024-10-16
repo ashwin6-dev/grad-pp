@@ -18,17 +18,6 @@ void RegisterAllocator::build_live_intervals(std::shared_ptr<Node> graph) {
     graph->accept(this);
 }
 
-int RegisterAllocator::next_reg(Node* node) {
-    int reg = 0;
-    std::vector<int> taken = taken_registers[node];
-
-    while (std::find(taken.begin(), taken.end(), reg) != taken.end()) {
-        reg++;
-    }
-
-    return reg;
-}
-
 void RegisterAllocator::mark_taken(Node* node, int reg) {
     if (taken_registers.count(node) == 0) {
         taken_registers[node] = {};
@@ -113,6 +102,7 @@ void RegisterAllocator::allocate_registers_using_live_analysis() {
     std::unordered_map<int, std::vector<Node*>> active_intervals;
     int max_time = 0;
 
+    // Going interval-by-interval and seeing which nodes are active in each interval
     for (const auto& interval : live_intervals) {
         Node* node = interval.first;
         int start = interval.second.start;
@@ -129,6 +119,7 @@ void RegisterAllocator::allocate_registers_using_live_analysis() {
         }
     }
 
+    // Allocates registers going through each interval
     for (int t = 0; t <= max_time; t++) {
         std::vector<Node*> nodes = active_intervals[t];
 
@@ -137,6 +128,7 @@ void RegisterAllocator::allocate_registers_using_live_analysis() {
             if (register_map.count(node) == 0) {
                 int reg = -1;
 
+                // Calculates the next available register for this node
                 std::vector<int> add_back;
                 while (
                     (reg == -1 || std::find(taken_registers[node].begin(), taken_registers[node].end(), reg) != taken_registers[node].end())

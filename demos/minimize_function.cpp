@@ -1,13 +1,12 @@
 #include "./headers/minimize_function.h"
 
-void minimize_function()
+int main()
 {
-    // Step 1: Define the variables x, y, z
     std::shared_ptr<Variable> x = make_variable(0);  // Initial value of x
     std::shared_ptr<Variable> y = make_variable(0);  // Initial value of y
     std::shared_ptr<Variable> z = make_variable(0);  // Initial value of z
 
-    // Step 2: Define the complex function f(x, y, z) = (x-2)^2 + (y-4)(y-2) + (z+1)^2
+    //  f(x, y, z) = (x-2)^2 + (y-4)(y-2) + (z+1)^2
     std::shared_ptr<Node> f_x_y_z = make_add(
         make_add(
             make_multiply(
@@ -21,7 +20,7 @@ void minimize_function()
             make_add(z, make_const(1.0)),
             make_add(z, make_const(1.0))));
 
-    // Step 3: Compute the gradients of f with respect to x, y, z
+    // Compute the gradients of f with respect to x, y, z
     GradVisitor g;
     GradientMap gm = g.backward(f_x_y_z);
 
@@ -29,7 +28,6 @@ void minimize_function()
     std::shared_ptr<Node> y_grad = gm[y.get()]; // Gradient of f with respect to y
     std::shared_ptr<Node> z_grad = gm[z.get()]; // Gradient of f with respect to z
 
-    // Step 4: Set up JIT and compilation for the function and its gradients
     RegisterAllocator ra;
     Emitter emitter;
     JITVisitor jit(ra, emitter);
@@ -41,11 +39,9 @@ void minimize_function()
 
     EvaluationVisitor ev;
 
-    // Step 5: Gradient descent parameters
     double lr = 0.05;  // Learning rate
     int epochs = 200;   // Number of iterations
 
-    // Step 6: Perform gradient descent
     for (int epoch = 1; epoch <= epochs; epoch++) {
         std::cout << "Epoch " << epoch << std::endl;
 
