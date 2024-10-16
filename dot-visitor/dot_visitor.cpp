@@ -15,7 +15,7 @@ void DotVisitor::visit(Variable* variable) {
     }
 
     if (reg_alloc.count(variable)) {
-        dot_output << node_map[variable] << " [label=< <font color=\"red\">" << node_map[variable] << "[" << reg_alloc[variable] << "]" << "</font> >];\n";
+        dot_output << node_map[variable] << " [label=< <font color=\"red\">" << node_map[variable] << "[Reg " << reg_alloc[variable] << "]" << "</font> >];\n";
     }else {
         dot_output << node_map[variable] << " [label=< <font color=\"red\">" << node_map[variable] << "</font> >];\n";
     }
@@ -29,7 +29,7 @@ void DotVisitor::visit(Const* constant) {
     if (reg_alloc.count(constant)) {
         dot_output << node_map[constant] 
         << " [label=< <font color=\"black\">Const[" 
-        << constant->get_value() << "] [" << reg_alloc[constant] << "]" << "</font> >];\n";
+        << constant->get_value() << "] [Reg " << reg_alloc[constant] << "]" << "</font> >];\n";
     }else {
        // Add the constant to the DOT graph with black-colored text
         dot_output << const_name << " [label=< <font color=\"black\">Const[" 
@@ -42,7 +42,7 @@ void DotVisitor::visit(Input* input) {
     node_map[input] = input_name;
 
     if (reg_alloc.count(input)) {
-        dot_output << input_name << " [label=< <font color=\"green\">Input[" << reg_alloc[input] << "]</font> >];\n";
+        dot_output << input_name << " [label=< <font color=\"green\">Input[Reg " << reg_alloc[input] << "]</font> >];\n";
     } else {
         dot_output << input_name << " [label=< <font color=\"green\">Input</font> >];\n";
     }
@@ -53,7 +53,7 @@ void DotVisitor::visit(Add* node) {
     node_map[node] = add_name;
 
     if (reg_alloc.count(node)) {
-        dot_output << add_name << " [label=< <font color=\"black\">+[" << reg_alloc[node] << "]</font> >];\n";
+        dot_output << add_name << " [label=< <font color=\"black\">+[Reg " << reg_alloc[node] << "]</font> >];\n";
     } else {
         dot_output << add_name << " [label=< <font color=\"black\">+</font> >];\n";
     }
@@ -77,7 +77,7 @@ void DotVisitor::visit(Subtract* node) {
     node_map[node] = sub_name;
 
     if (reg_alloc.count(node)) {
-        dot_output << sub_name << " [label=< <font color=\"black\">-[" << reg_alloc[node] << "]</font> >];\n";
+        dot_output << sub_name << " [label=< <font color=\"black\">-[Reg " << reg_alloc[node] << "]</font> >];\n";
     } else {
         dot_output << sub_name << " [label=< <font color=\"black\">-</font> >];\n";
     }
@@ -101,7 +101,7 @@ void DotVisitor::visit(Multiply* node) {
     node_map[node] = mul_name;
 
     if (reg_alloc.count(node)) {
-        dot_output << mul_name << " [label=< <font color=\"black\">*[" << reg_alloc[node] << "]</font> >];\n";
+        dot_output << mul_name << " [label=< <font color=\"black\">*[Reg " << reg_alloc[node] << "]</font> >];\n";
     } else {
         dot_output << mul_name << " [label=< <font color=\"black\">*</font> >];\n";
     }
@@ -126,7 +126,7 @@ void DotVisitor::visit(Divide* node) {
     node_map[node] = div_name;
 
     if (reg_alloc.count(node)) {
-        dot_output << div_name << " [label=< <font color=\"black\">/[" << reg_alloc[node] << "]</font> >];\n";
+        dot_output << div_name << " [label=< <font color=\"black\">/[Reg " << reg_alloc[node] << "]</font> >];\n";
     } else {
         dot_output << div_name << " [label=< <font color=\"black\">/</font> >];\n";
     }

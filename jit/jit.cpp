@@ -15,15 +15,16 @@ compiled JITVisitor::jit(std::shared_ptr<Node> graph)
     return func;
 }
 
+// Register spilling work in progress
 void JITVisitor::reload_register(int reg)
 {
-    emitter.movsd_pointer_xmm(spilled_registers[reg], reg);
+    emitter.movesd_pointer_reg(spilled_registers[reg], reg);
     spilled_registers.erase(reg);
 }
 
 void JITVisitor::spill_register(int reg)
 {
-    emitter.movsd_xmm_pointer(reg, spill_addr);
+    emitter.movesd_reg_pointer(reg, spill_addr);
     spilled_registers[reg] = spill_addr;
     spill_addr++;
 }
@@ -35,26 +36,17 @@ int JITVisitor::get_register(Node* node)
         return reg;
     }
 
-    int reg = 0;
-    for (int i = 0; i < 16; i++) {
-        if (!spilled_registers.count(i)) {
-            reg = i;
-            break;
-        }
-    }
-
-    spill_register(reg);
-    return reg;
+    return -1;
 }
 
 void JITVisitor::visit(Variable* node) 
 {
-    emitter.movsd_pointer_xmm(node->get_value_address(), get_register(node));
+    emitter.movesd_pointer_reg(node->get_value_address(), get_register(node));
 }
 
 void JITVisitor::visit(Const* node)
 {
-    emitter.movsd_pointer_xmm(node->get_value_address(), get_register(node));
+    emitter.movesd_pointer_reg(node->get_value_address(), get_register(node));
 }
 
 void JITVisitor::visit(Input* node)
@@ -65,7 +57,7 @@ void JITVisitor::visit(Input* node)
     }
 
     int displacement = node_displacement[node];
-    emitter.movesd_memory_reg(get_register(node), displacement);
+    emitter.movesd_rdi_reg(get_register(node), displacement);
 }
 
 void JITVisitor::visit_operation(OperationNode* node, void (Emitter::*operation)(int, int))

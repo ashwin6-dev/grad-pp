@@ -1,0 +1,21 @@
+graph computation_graph {
+edge [dir=none];
+node [shape=none];
+node0 [label=< <font color="black">*[Reg 15]</font> >];
+node1 [label=< <font color="black">+[Reg 15]</font> >];
+node2 [label=< <font color="black">*[Reg 15]</font> >];
+node3 [label=< <font color="black">Const[5] [Reg 15]</font> >];
+node2 -- node3;
+x [label=< <font color="red">x[Reg 14]</font> >];
+node2 -- x;
+node1 -- node2;
+node4 [label=< <font color="black">*[Reg 14]</font> >];
+node5 [label=< <font color="black">Const[10] [Reg 13]</font> >];
+node4 -- node5;
+x [label=< <font color="red">x[Reg 14]</font> >];
+node4 -- x;
+node1 -- node4;
+node0 -- node1;
+y [label=< <font color="red">y[Reg 14]</font> >];
+node0 -- y;
+}

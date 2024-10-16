@@ -11,14 +11,14 @@ void Emitter::clear()
     instructions.clear();
 }
 
-void Emitter::movsd_imm_to_xmm(double value, int reg) 
+void Emitter::movesd_imm_to_reg(double value, int reg) 
 {
     double* value_ptr = new double(value);
-    movsd_pointer_xmm(value_ptr, reg);
+    movesd_pointer_reg(value_ptr, reg);
 }
 
 
-void Emitter::movesd_reg_memory(int reg, int displacement)
+void Emitter::movesd_reg_rdi(int reg, int displacement)
 {
     int prefix = 0xf2;       // Prefix for double-precision floating-point operations
     int opcode_prefix = 0x0f; // Two-byte opcode prefix 
@@ -42,7 +42,7 @@ void Emitter::movesd_reg_memory(int reg, int displacement)
     instructions.push_back(displacement);  // 8-bit displacement
 }
 
-void Emitter::movesd_memory_reg(int reg, int displacement)
+void Emitter::movesd_rdi_reg(int reg, int displacement)
 {
     int prefix = 0xf2;       // Prefix for double-precision floating-point operations
     int opcode_prefix = 0x0f; // Two-byte opcode prefix
@@ -66,7 +66,7 @@ void Emitter::movesd_memory_reg(int reg, int displacement)
     instructions.push_back(displacement);  // 8-bit displacement
 }
 
-void Emitter::movsd_pointer_xmm(void* address, int reg) {
+void Emitter::movesd_pointer_reg(void* address, int reg) {
     // Moving value at pointer into reg (mov address to rsi, mov rsi to xmm)
 
     instructions.push_back(0x48);          // REX.W prefix for 64-bit operation
@@ -98,7 +98,7 @@ void Emitter::movsd_pointer_xmm(void* address, int reg) {
     instructions.push_back(modrm);
 }
 
-void Emitter::movsd_xmm_pointer(int reg, void* address) {
+void Emitter::movesd_reg_pointer(int reg, void* address) {
     instructions.push_back(0x48);          // REX.W prefix for 64-bit operation
     instructions.push_back(0xbe);          // mov rsi, imm64 opcode (mov rsi, <address>)
     long long addr = reinterpret_cast<long long>(address);
