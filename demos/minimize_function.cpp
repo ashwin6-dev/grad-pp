@@ -7,7 +7,7 @@ void minimize_function()
     std::shared_ptr<Variable> y = make_variable(0);  // Initial value of y
     std::shared_ptr<Variable> z = make_variable(0);  // Initial value of z
 
-    // Step 2: Define the complex function f(x, y, z) = (5+xz)(x^2 + 10y) 
+    // Step 2: Define the complex function f(x, y, z) = (x-2)^2 + (y-4)(y-2) + (z+1)^2
     std::shared_ptr<Node> f_x_y_z = make_add(
         make_add(
             make_multiply(
